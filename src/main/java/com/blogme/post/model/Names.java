@@ -1,21 +1,20 @@
 package com.blogme.post.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotBlank;
 
 @Embeddable
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Names {
     @NotBlank
-    private String firstName;
+    private String firstName="";
+    private String middleName="";
     @NotBlank
-    private String middleName;
-    @NotBlank
-    private String lastName;
+    private String lastName="";
 }

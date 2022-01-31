@@ -6,6 +6,7 @@ import com.blogme.post.dto.PostUpdateDto;
 import com.blogme.post.exceptionhandler.dto.ResponseMessage;
 import com.blogme.post.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,12 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    public List<PostDto> getAll(){
+    public List<Post> getAll(){
         return postService.getAll();
     }
 
     @GetMapping("/{id}")
-    public PostDto getPostById(@PathVariable Long id){
+    public Post getPostById(@PathVariable Long id){
         return postService.getPostById(id);
     }
 
@@ -53,5 +54,14 @@ public class PostController {
         return postService.findAllByIdIn(responseDto);
     }
 
+    @GetMapping("/author/{authorId}")
+    public List<Post> findAllByAuthorId(@PathVariable Long authorId){
+        return postService.findAllByAuthorId(authorId);
+    }
 
+    @DeleteMapping("/author/{authorId}")
+    public ResponseEntity<ResponseMessage> deleteAllByAuthorId(@PathVariable Long authorId){
+        postService.deleteAllByAuthorId(authorId);
+        return new ResponseEntity<>(new ResponseMessage("Deleted", HttpStatus.OK), HttpStatus.OK);
+    }
 }

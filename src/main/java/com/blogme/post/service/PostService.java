@@ -1,5 +1,6 @@
 package com.blogme.post.service;
 
+import com.blogme.post.model.Names;
 import com.blogme.post.model.Post;
 import com.blogme.post.dto.BlogResponseDto;
 import com.blogme.post.dto.PostDto;
@@ -27,24 +28,23 @@ public class PostService {
     @Autowired
     private ModelMapper mapper;
 
-    public List<PostDto> getAll(){
-        List<PostDto> dtos = postRepository.findAll()
-                .stream()
-                .map(post -> mapper.map(post, PostDto.class))
-                .collect(Collectors.toList());
-        return dtos;
+    public List<Post> getAll(){
+        return postRepository.findAll();
     }
 
     public Optional<Post> findById(Long id){
         return postRepository.findById(id);
     }
-    public PostDto getPostById(Long id) {
+    public Post getPostById(Long id) {
         Optional<Post> post = findById(id);
-        return post.<PostDto>map(value -> mapper.map(value, null)).orElse(null);
+        return post.orElse(null);
     }
 
     public ResponseMessage add(PostDto postDto){
         Post p = mapper.map(postDto, Post.class);
+        p.setId(null);
+        Names names = new Names(postDto.getFirstName(), postDto.getMiddleName(), postDto.getLastName());
+        p.setNames(names);
         p.setCreatedAt(new Date());
         postRepository.save(p);
         return new ResponseMessage("Added successfully!", HttpStatus.CREATED);
@@ -52,21 +52,20 @@ public class PostService {
 
     public ResponseMessage update(PostUpdateDto req){
         Optional<Post> postOpt = findById(req.getId());
-if(postOpt.isPresent()){
-    Post post = postOpt.get();
-    if(!req.getFirstName().isEmpty()) post.getNames().setFirstName(req.getFirstName());
-    if(!req.getMiddleName().isEmpty()) post.getNames().setMiddleName(req.getMiddleName());
-    if(!req.getLastName().isEmpty()) post.getNames().setLastName(req.getLastName());
-    if(!req.getTitle().isEmpty()) post.setTitle(req.getTitle());
-    if(!req.getContent().isEmpty()) post.setContent(req.getContent());
-    if(!req.getStatus().isEmpty()) post.setStatus(req.getStatus());
-    post.setCreatedAt(post.getCreatedAt());
-    post.setUpdatedAt(new Date());
+        if(postOpt.isPresent()){
+            Post post = postOpt.get();
+            if(!req.getFirstName().isEmpty()) post.getNames().setFirstName(req.getFirstName());
+            if(!req.getMiddleName().isEmpty()) post.getNames().setMiddleName(req.getMiddleName());
+            if(!req.getLastName().isEmpty()) post.getNames().setLastName(req.getLastName());
+            if(!req.getTitle().isEmpty()) post.setTitle(req.getTitle());
+            if(!req.getContent().isEmpty()) post.setContent(req.getContent());
+            if(!req.getStatus().isEmpty()) post.setStatus(req.getStatus());
+            post.setUpdatedAt(new Date());
 
-    postRepository.save(post);
-    return new ResponseMessage("Updated successfully!",HttpStatus.OK);
+            postRepository.save(post);
+            return new ResponseMessage("Updated successfully!",HttpStatus.OK);
 
-}
+        }
         return new ResponseMessage("Post not found.", HttpStatus.NOT_FOUND);
     }
 
@@ -77,5 +76,13 @@ if(postOpt.isPresent()){
 
     public List<Post> findAllByIdIn(BlogResponseDto res){
         return postRepository.findAllByIdIn(res.getIds());
+    }
+
+    public List<Post> findAllByAuthorId(Long authorId){
+        return postRepository.findAllByAuthorId(authorId);
+    }
+
+    public void deleteAllByAuthorId(Long authorId){
+        postRepository.deleteAllByAuthorId(authorId);
     }
 }

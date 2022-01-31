@@ -1,9 +1,6 @@
 package com.blogme.post.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name= "posts")
+@ToString
 public class Post {
 
     @Id
@@ -33,7 +31,6 @@ public class Post {
             @AttributeOverride(name = "middleName", column = @Column(length = 100)),
             @AttributeOverride(name = "lastName", column = @Column(length = 100))
     })
-    @Column(name= "author")
     private Names names;
 
     @NotBlank
